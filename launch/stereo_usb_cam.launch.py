@@ -20,33 +20,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'io_method',
-            default_value='shared_mem',
-            description='ros/shared_mem'),
-        DeclareLaunchArgument(
-            'image_width',
-            default_value='1280',
-            description='camera out image width'),
-        DeclareLaunchArgument(
-            'image_height',
-            default_value='720',
-            description='camera out image height'),
-        DeclareLaunchArgument(
-            'data_sampling_rate',
-            default_value='30',
-            description='camera sampling rate'),
-
         Node(
             package='hobot_stereo_usb_cam',
             executable='hobot_stereo_usb_cam',
             output='screen',
-            parameters=[
-                {"io_method": LaunchConfiguration('io_method')},
-                {"image_width": LaunchConfiguration('image_width')},
-                {"image_height": LaunchConfiguration('image_height')},
-                {"data_sampling_rate": LaunchConfiguration('data_sampling_rate')}
-            ],
             arguments=['--ros-args', '--log-level', 'info']
         )
     ])

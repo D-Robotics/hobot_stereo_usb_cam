@@ -31,7 +31,6 @@
 #include "videocapture.hpp"
 
 #ifdef USING_HBMEM
-// #include "hb_mem_mgr.h"
 #include "hbm_img_msgs/msg/hbm_msg1080_p.hpp"
 #endif
 
@@ -48,15 +47,11 @@ private:
   int CheckParams();
 
   int Init();
-  void hbmem_update();
   
-  // For non-blocking keyboard inputs
-  int Getch();
-
   int Feedback();
 
   // yuv422转nv12
-  int yuyv_to_nv12(uint8_t * image_in, uint8_t* image_out, int width, int height, unsigned long int filesize);
+  int YUV422ToNV12(uint8_t * image_in, uint8_t* image_out, int width, int height, unsigned long int filesize);
 
   int Publish(const sl_oc::video::Frame& frame);
 
@@ -66,19 +61,13 @@ private:
 
   std::shared_ptr<std::thread> sp_getimg_task_ = nullptr;
 
-  std::shared_ptr<std::thread> sp_dumptask_ = nullptr;
-  std::shared_ptr<std::thread> sp_teleop_task_ = nullptr;
-
 #ifdef USING_HBMEM
   int32_t mSendIdx = 0;
   rclcpp::TimerBase::SharedPtr timer_hbmem_;
   rclcpp::PublisherHbmem<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr publisher_hbmem_;
   std::string pub_hbmem_topic_name_ = "hbmem_stereo_img";
 #endif
-/*
-  sensor_msgs::msg::CompressedImage::SharedPtr ros_img_compressed_;
-  rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr video_compressed_publisher_;
-*/
+  
   // parameters
   std::string video_device_ = "ZED2i";
   std::string frame_id_;
@@ -94,26 +83,8 @@ private:
   std::string camera_info_url_;
   std::string camera_calibration_file_path_;
 
-  rclcpp::TimerBase::SharedPtr timer_ = nullptr;
   const int qos_depth_ = 10;
-  int period_ms = 30;
   
-  size_t cache_len_limit_ = 10;
-  std::vector<int> video_index_ {0, 1};
-  std::map<int, uint64_t> counts_;
-  uint64_t get_img_counts_ = 0;
-
-  std::mutex img_mtx_;
-
-  std::queue<std::function<void()>> dump_img_task_cache_;
-
-  std::mutex dump_img_task_mtx_;
-  std::condition_variable dump_img_task_cv_;
-
-  std::string data_collecting_path_ = "./data_collecting/";
-  
-  int data_sampling_rate_ = 30;
-  uint64_t dump_count_ = 0;
   bool enable_dump_ = true;
   
   bool enable_fb_ = true;

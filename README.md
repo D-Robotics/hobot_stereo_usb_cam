@@ -1,14 +1,15 @@
-# Getting Started with Stereo_Cam Node
+# Getting Started with hobot_stereo_cam Node
 ---
 
 
-## 参数
+## 功能
 
-| 参数名      | 解释             | 类型   | 支持的配置                 | 是否必须 | 默认值             |
-| ------------| -----------------| -------| --------------------------| -------- | -------------------|
-| image_height| 采集图像数据的高方向分辨率 | int    | 根据sensor支持选择         | 否       | 1280                |
-| image_width | 采集图像数据的宽方向分辨率 | int    | 根据sensor支持选择         | 否        | 720               |
-| data_sampling_rate   | 采集图像数据的帧率。<=0表示不使能采集功能，>0表示每data_sampling_rate帧采集一帧图像数据  | int | 无限制 | 否 | 30 |
+从ZED 2i双目相机采集图像，并且通过零拷贝通信方式，以`hbmem_stereo_img`话题发布2560x720分辨率的NV12格式的图片数据。
+
+## 平台
+
+地平线RDK X3, RDK X3 Module和RDK J5。
+
 
 ## 编译
 
