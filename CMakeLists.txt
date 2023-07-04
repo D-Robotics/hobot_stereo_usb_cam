@@ -24,7 +24,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-add_compile_options(-w)
+add_compile_options(-w -ggdb)
 
 add_definitions(-DVIDEO_MOD_AVAILABLE)
 
@@ -91,6 +91,10 @@ install(
   TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
+
+install(
+  FILES deps/lib/libzed_open_capture.so
+  DESTINATION lib/)
 
 install(DIRECTORY
   ${PROJECT_SOURCE_DIR}/config/

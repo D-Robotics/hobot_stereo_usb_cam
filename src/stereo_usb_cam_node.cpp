@@ -60,6 +60,10 @@ StereoUsbCamNode::StereoUsbCamNode(const std::string& node_name)
 }
 
 StereoUsbCamNode::~StereoUsbCamNode() {
+  dump_img_task_cv_.notify_all();
+  if (sp_dumptask_) {
+    sp_dumptask_->join();
+  }
   RCLCPP_WARN(rclcpp::get_logger("stereo_usb_cam_node"), "shutting down");
 }
 
@@ -73,24 +77,30 @@ int StereoUsbCamNode::GetParams() {
   this->declare_parameter("io_method", io_method_);
   this->declare_parameter("out_format", out_format_);
   this->declare_parameter("video_device", video_device_);
-  
+  this->declare_parameter("enable_fb", enable_fb_);
+  this->declare_parameter("enable_dump", enable_dump_);
+
   this->get_parameter<std::string>("camera_name", camera_name_);
   this->get_parameter<int>("framerate", framerate_);
   this->get_parameter<int>("image_height", image_height_);
   this->get_parameter<int>("image_width", image_width_);
   this->get_parameter<std::string>("io_method", io_method_);
   this->get_parameter<std::string>("out_format", out_format_);
-  this->get_parameter<std::string>("video_device", video_device_);
+  this->get_parameter<int>("video_device", video_device_);
+  this->get_parameter<bool>("enable_fb", enable_fb_);
+  this->get_parameter<bool>("enable_dump", enable_dump_);
 
   RCLCPP_WARN_STREAM(
       rclcpp::get_logger("stereo_usb_cam_node"),
       "Get params complete."
       << "\n camera_name: " << camera_name_
-      << "\n video_device_name: " << video_device_
+      << "\n video_device index: " << video_device_
       << "\n image_width: " << image_width_
       << "\n image_height: " << image_height_
       << "\n io_method_name: " << io_method_
       << "\n out_format: " << out_format_
+      << "\n enable_fb: " << enable_fb_
+      << "\n enable_dump: " << enable_dump_
     );
 
   return 0;
@@ -118,6 +128,9 @@ int StereoUsbCamNode::Init() {
     publisher_hbmem_ =
         this->create_publisher_hbmem<hbm_img_msgs::msg::HbmMsg1080P>(
             pub_hbmem_topic_name_, qos_depth_);
+    timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(static_cast<int64_t>(period_ms)),
+        std::bind(&StereoUsbCamNode::hbmem_update, this));
 #else
     RCLCPP_ERROR_STREAM(rclcpp::get_logger("stereo_usb_cam_node"),
                       "Hbmem is not enabled.");
@@ -142,16 +155,17 @@ int StereoUsbCamNode::Init() {
 
     // ----> Create Video Capture
     sl_oc::video::VideoCapture cap_0(params);
-    if( !cap_0.initializeVideo(8) )
+    if( !cap_0.initializeVideo(video_device_) )
     {
-        std::cerr << "Cannot open camera video capture" << std::endl;
-        std::cerr << "See verbosity level for more details." << std::endl;
-
-        return EXIT_FAILURE;
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger("stereo_usb_cam_node"), 
+          "Cannot open camera video capture!" << "\n" << "See verbosity level for more details.");
+      rclcpp::shutdown();
+      return;
     }
 
-    std::cout << "Connected to camera sn: " << cap_0.getSerialNumber() << "[" << cap_0.getDeviceName() << "]" << std::endl;
-    // <---- Create Video Capture
+    RCLCPP_WARN_STREAM(rclcpp::get_logger("stereo_usb_cam_node"), 
+        "Open video device " << video_device_ << " success.\n"
+        << "camera sn: " << cap_0.getSerialNumber() << "[" << cap_0.getDeviceName() << "]");
 
     while (rclcpp::ok()) 
     {
@@ -164,23 +178,16 @@ int StereoUsbCamNode::Init() {
           Publish(frame);
         }
         continue;
-        // <---- If the frame is valid we can display it
-
-        // ----> Keyboard handling
-        int key = cv::waitKey( 5 );
-        if(key=='q' || key=='Q') // Quit
-            break;
-        // <---- Keyboard handling
     }
   };
 
 
-  // sp_getimg_task_ = std::make_shared<std::thread>([this, get_img](){
-  //   // while (rclcpp::ok()) 
-  //   {
-  //     get_img();
-  //   }
-  // });
+  sp_getimg_task_ = std::make_shared<std::thread>([this, get_img](){
+    // while (rclcpp::ok()) 
+    {
+      get_img();
+    }
+  });
   // std::cout << "\n\n sp_getimg_task_ id: " << sp_getimg_task_->get_id() << "\n\n";
 
   // timer_ = this->create_wall_timer(
@@ -219,7 +226,7 @@ int StereoUsbCamNode::Publish(const sl_oc::video::Frame& frame) {
   // unsigned char *dest = 
   //         reinterpret_cast<unsigned char *>(calloc(1, dest_size));
   assert(dest != NULL);
-  if (YUV422ToNV12(frame.data, dest, frame.width, frame.height, frame.width * frame.height * frame.channels) < 0) {
+  if (yuyv_to_nv12(frame.data, dest, frame.width, frame.height, frame.width * frame.height * frame.channels) < 0) {
     std::cout << "convert data from yuy2 to nv12 failed...\n";
     return -1;
   }
@@ -339,11 +346,12 @@ int StereoUsbCamNode::Publish(const sl_oc::video::Frame& frame) {
   msg.step = frame.width;
   msg.data_size = dest_size;
   msg.index = frame.frame_id;
+  // memcpy(msg.data.data(), dest, data_size);
 
   publisher_hbmem_->publish(std::move(loanedMsg));
 
   RCLCPP_INFO(rclcpp::get_logger("stereo_usb_cam_node"),
-                "pub from cam");
+                "pub from cam with topic %s", pub_hbmem_topic_name_.data());
                 
   return 0;
 }
@@ -398,7 +406,7 @@ int StereoUsbCamNode::Feedback() {
   return 0;
 }
 
-int StereoUsbCamNode::YUV422ToNV12(uint8_t * image_in, uint8_t* image_out, int width, int height, unsigned long int filesize) {
+int StereoUsbCamNode::yuyv_to_nv12(uint8_t * image_in, uint8_t* image_out, int width, int height, unsigned long int filesize) {
   if (!image_in || !image_out || width <= 0 || height <= 0) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger("stereo_usb_cam_node"), 
          "some error happen... in_frame:" << image_in
@@ -474,5 +482,60 @@ int StereoUsbCamNode::YUV422ToNV12(uint8_t * image_in, uint8_t* image_out, int w
 
   return 0;
  }
+
+
+void StereoUsbCamNode::hbmem_update() {
+#ifdef USING_HBMEM
+  // if (cam_cap_.is_capturing()) {
+    auto loanedMsg = publisher_hbmem_->borrow_loaned_message();
+  //   if (loanedMsg.is_valid()) {
+  //     auto& msg = loanedMsg.get();
+  //     if (!cam_cap_.get_image_mem(msg.time_stamp,
+  //                                 msg.encoding,
+  //                                 msg.height,
+  //                                 msg.width,
+  //                                 msg.step,
+  //                                 msg.data,
+  //                                 msg.data_size)) {
+  //       RCLCPP_ERROR(rclcpp::get_logger("stereo_usb_cam_node"),
+  //                    "hbmem_update grab img failed");
+  //       return;
+  //     }
+  //     msg.index = mSendIdx++;
+  //     publisher_hbmem_->publish(std::move(loanedMsg));
+  //   } else {
+  //     RCLCPP_INFO(rclcpp::get_logger("stereo_usb_cam_node"),
+  //                 "borrow_loaned_message failed");
+  //   }
+  // }
+#endif
+}
+
+int StereoUsbCamNode::Getch() {
+  int ch;
+  struct termios oldt;
+  struct termios newt;
+
+  // Store old settings, and copy to new settings
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+
+  // Make required changes and apply the settings
+  newt.c_lflag &= ~(ICANON | ECHO);
+  newt.c_iflag |= IGNBRK;
+  newt.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
+  newt.c_lflag &= ~(ICANON | ECHO | ECHOK | ECHOE | ECHONL | ISIG | IEXTEN);
+  newt.c_cc[VMIN] = 1;
+  newt.c_cc[VTIME] = 0;
+  tcsetattr(fileno(stdin), TCSANOW, &newt);
+
+  // Get the current character
+  ch = getchar();
+
+  // Reapply old settings
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+  return ch;
+}
 
 }  // namespace stereo_usb_cam
