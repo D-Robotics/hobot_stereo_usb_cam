@@ -25,6 +25,9 @@ def generate_launch_description():
             default_value='shared_mem',
             description='ros/shared_mem'),
         DeclareLaunchArgument(
+            'pub_topic_name',
+            default_value='hbmem_stereo_img'),
+        DeclareLaunchArgument(
             'image_width',
             default_value='1280',
             description='camera out image width'),
@@ -51,6 +54,7 @@ def generate_launch_description():
             output='screen',
             parameters=[
                 {"io_method": LaunchConfiguration('io_method')},
+                {"pub_topic_name": LaunchConfiguration('pub_topic_name')},
                 {"video_device": LaunchConfiguration('video_device')},
                 {"image_width": LaunchConfiguration('image_width')},
                 {"image_height": LaunchConfiguration('image_height')},

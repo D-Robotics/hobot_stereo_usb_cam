@@ -75,6 +75,7 @@ int StereoUsbCamNode::GetParams() {
   this->declare_parameter("image_height", image_height_);
   this->declare_parameter("image_width", image_width_);
   this->declare_parameter("io_method", io_method_);
+  this->declare_parameter("pub_topic_name", pub_hbmem_topic_name_);
   this->declare_parameter("out_format", out_format_);
   this->declare_parameter("video_device", video_device_);
   this->declare_parameter("enable_fb", enable_fb_);
@@ -85,6 +86,7 @@ int StereoUsbCamNode::GetParams() {
   this->get_parameter<int>("image_height", image_height_);
   this->get_parameter<int>("image_width", image_width_);
   this->get_parameter<std::string>("io_method", io_method_);
+  this->get_parameter<std::string>("pub_topic_name", pub_hbmem_topic_name_);
   this->get_parameter<std::string>("out_format", out_format_);
   this->get_parameter<int>("video_device", video_device_);
   this->get_parameter<bool>("enable_fb", enable_fb_);
@@ -98,6 +100,7 @@ int StereoUsbCamNode::GetParams() {
       << "\n image_width: " << image_width_
       << "\n image_height: " << image_height_
       << "\n io_method_name: " << io_method_
+      << "\n pub_topic_name: " << pub_hbmem_topic_name
       << "\n out_format: " << out_format_
       << "\n enable_fb: " << enable_fb_
       << "\n enable_dump: " << enable_dump_
