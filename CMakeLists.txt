@@ -65,7 +65,10 @@ add_executable(${PROJECT_NAME}
 set(BASE_LIBRARIES pthread vio cam dl)
 
 target_link_libraries(${PROJECT_NAME}
-  ${BASE_LIBRARIES} yaml-cpp opencv_world zed_open_capture
+  ${BASE_LIBRARIES} yaml-cpp opencv_world
+  zed_open_capture
+  hidapi-libusb
+  usb-1.0
 )
 
 ament_target_dependencies(
@@ -86,15 +89,16 @@ if(BUILD_HBMEM)
   )
 endif()
 
+install(DIRECTORY
+  deps/lib/
+  DESTINATION lib/
+)
+
 # Install executables
 install(
   TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
-
-install(
-  FILES deps/lib/libzed_open_capture.so
-  DESTINATION lib/)
 
 install(DIRECTORY
   ${PROJECT_SOURCE_DIR}/config/

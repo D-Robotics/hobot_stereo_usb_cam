@@ -48,7 +48,6 @@ private:
   int CheckParams();
 
   int Init();
-  void hbmem_update();
   
   // For non-blocking keyboard inputs
   int Getch();
@@ -99,7 +98,6 @@ private:
 
   rclcpp::TimerBase::SharedPtr timer_ = nullptr;
   const int qos_depth_ = 10;
-  int period_ms = 30;
   
   size_t cache_len_limit_ = 10;
   std::vector<int> video_index_ {0, 1};
