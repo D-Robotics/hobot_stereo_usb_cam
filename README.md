@@ -50,7 +50,7 @@ colcon build --packages-select hobot_stereo_usb_cam --cmake-args -DBUILD_HBMEM=O
 
 ```shell
 source /opt/tros/setup.bash
-ros2 launch hobot_stereo_usb_cam stereo_usb_cam.launch.py
+ros2 launch hobot_stereo_usb_cam hobot_stereo_usb_cam.launch.py
 ```
 
 运行成功后输出如下log:
