@@ -3,7 +3,7 @@
 
 # 功能介绍
 
-从USB摄像头获取双目图像数据并通过话题发布。
+从USB摄像头获取双目图像数据并通过`ROS2`发布话题消息，支持的摄像头类型为`ZED 2i`。
 
 # 支持平台
 
@@ -45,6 +45,20 @@
 source /opt/tros/setup.bash
 colcon build --packages-select hobot_stereo_usb_cam --cmake-args -DBUILD_HBMEM=ON
 ```
+
+## docker交叉编译
+
+1、编译环境确认
+
+- 在docker中编译，并且docker中已经编译好tros.b。docker安装、交叉编译、tros.b编译和部署说明详见[TogetheROS.Bot用户手册](https://developer.horizon.ai/api/v1/fileData/documents_tros/quick_start/cross_compile.html#)。
+
+2、编译
+
+- 编译命令：
+
+  ```shell
+  bash robot_dev_config/build.sh -p J5 -s hobot_stereo_usb_cam
+  ```
 
 ## 运行
 
