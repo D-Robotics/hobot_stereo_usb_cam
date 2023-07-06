@@ -100,7 +100,7 @@ int StereoUsbCamNode::GetParams() {
       << "\n image_width: " << image_width_
       << "\n image_height: " << image_height_
       << "\n io_method_name: " << io_method_
-      << "\n pub_topic_name: " << pub_hbmem_topic_name
+      << "\n pub_topic_name: " << pub_hbmem_topic_name_
       << "\n out_format: " << out_format_
       << "\n enable_fb: " << enable_fb_
       << "\n enable_dump: " << enable_dump_
