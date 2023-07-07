@@ -1,5 +1,5 @@
-# Changelog for package stereo_mipi_cam
+# Changelog for package hobot_stereo_usb_cam
 
-tros_2.0.0 (2023-06-09)
+tros_2.0.0 (2023-07-07)
 ------------------
-1. 支持IMX219-83 Stereo Camera模组。
+1. 支持ZED 2i Stereo Camera模组。
