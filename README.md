@@ -7,12 +7,12 @@
 
 # 支持平台
 
-- RDK J5
+- RDK X5ultra
 
 # 开发环境
 
 - 编程语言: C/C++
-- 开发平台: RDK J5/X86
+- 开发平台: RDK X5ultra/X86
 - 系统版本：Ubuntu 20.04
 - 编译工具链:Linux GCC 9.3.0/Linaro GCC 9.3.0
 
@@ -27,7 +27,7 @@
 | enable_fb   | 发布本地NV12格式的图像数据，图片路径为运行路径下的`frame_10_2560_720.nv12`文件  | bool | True/False | 否 | False |
 | video_device | 设备号 | int    | 根据实际识别出来的设备号配置         | 否        | 0               |
 
-## RDK J5 Ubuntu 20.04系统上编译
+## RDK X5ultra Ubuntu 20.04系统上编译
 
 1、编译环境确认
 
@@ -57,7 +57,7 @@ colcon build --packages-select hobot_stereo_usb_cam --cmake-args -DBUILD_HBMEM=O
 - 编译命令：
 
   ```shell
-  bash robot_dev_config/build.sh -p J5 -s hobot_stereo_usb_cam
+  bash robot_dev_config/build.sh -p X5ultra -s hobot_stereo_usb_cam
   ```
 
 ## 运行
