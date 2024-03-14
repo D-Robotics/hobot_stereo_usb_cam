@@ -28,14 +28,7 @@ add_compile_options(-w -ggdb)
 
 add_definitions(-DVIDEO_MOD_AVAILABLE)
 
-if(BUILD_HBMEM)
-  message("BUILD_HBMEM is on")
-  add_definitions(-DUSING_HBMEM)
-  find_package(hbm_img_msgs REQUIRED)
-else()
-  message("BUILD_HBMEM is off")
-endif()
-
+find_package(hbm_img_msgs REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
@@ -75,19 +68,9 @@ ament_target_dependencies(
   ${PROJECT_NAME}
   rclcpp
   sensor_msgs
+  hbm_img_msgs
   yaml_cpp_vendor
   )
-
-if(BUILD_HBMEM)
-  target_link_libraries(${PROJECT_NAME}
-    hbmem
-  )
-  ament_target_dependencies(
-    ${PROJECT_NAME}
-    rclcpp
-    hbm_img_msgs
-  )
-endif()
 
 install(DIRECTORY
   deps/lib/

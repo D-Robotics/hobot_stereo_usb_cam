@@ -30,10 +30,8 @@
 
 #include "videocapture.hpp"
 
-#ifdef USING_HBMEM
 // #include "hb_mem_mgr.h"
 #include "hbm_img_msgs/msg/hbm_msg1080_p.hpp"
-#endif
 
 namespace stereo_usb_cam
 {
@@ -68,12 +66,10 @@ private:
   std::shared_ptr<std::thread> sp_dumptask_ = nullptr;
   std::shared_ptr<std::thread> sp_teleop_task_ = nullptr;
 
-#ifdef USING_HBMEM
   int32_t mSendIdx = 0;
   rclcpp::TimerBase::SharedPtr timer_hbmem_;
-  rclcpp::PublisherHbmem<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr publisher_hbmem_;
+  rclcpp::Publisher<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr publisher_hbmem_;
   std::string pub_hbmem_topic_name_ = "hbmem_stereo_img";
-#endif
 /*
   sensor_msgs::msg::CompressedImage::SharedPtr ros_img_compressed_;
   rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr video_compressed_publisher_;

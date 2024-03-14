@@ -126,15 +126,10 @@ int StereoUsbCamNode::Init() {
     image_pub_ =
       this->create_publisher<sensor_msgs::msg::Image>("image_raw", qos_depth_);
   } else {
-#ifdef USING_HBMEM
     // 创建hbmempub
     publisher_hbmem_ =
-        this->create_publisher_hbmem<hbm_img_msgs::msg::HbmMsg1080P>(
+        this->create_publisher<hbm_img_msgs::msg::HbmMsg1080P>(
             pub_hbmem_topic_name_, qos_depth_);
-#else
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger("stereo_usb_cam_node"),
-                      "Hbmem is not enabled.");
-#endif
   }
 
   if (enable_fb_) {

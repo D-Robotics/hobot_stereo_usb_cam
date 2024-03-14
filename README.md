@@ -43,7 +43,7 @@
 
 ```shell
 source /opt/tros/setup.bash
-colcon build --packages-select hobot_stereo_usb_cam --cmake-args -DBUILD_HBMEM=ON
+colcon build --packages-select hobot_stereo_usb_cam
 ```
 
 ## docker交叉编译
