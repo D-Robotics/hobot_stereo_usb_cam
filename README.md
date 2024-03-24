@@ -1,73 +1,73 @@
+English| [简体中文](./README_cn.md)
+
 # Getting Started with Stereo_Cam Node
 ---
 
-# 功能介绍
+# Introduction
 
-从USB摄像头获取双目图像数据并通过`ROS2`发布话题消息，支持的摄像头类型为`ZED 2i`。
+Obtain stereo image data from USB cameras and publish topic messages through `ROS2`. Supported camera type is `ZED 2i`.
 
-# 支持平台
+# Supported Platforms
 
 - RDK Ultra
 
-# 开发环境
+# Development Environment
 
-- 编程语言: C/C++
-- 开发平台: RDK Ultra/X86
-- 系统版本：Ubuntu 20.04
-- 编译工具链:Linux GCC 9.3.0/Linaro GCC 9.3.0
+- Programming Language: C/C++
+- Development Platform: RDK Ultra/X86
+- System Version: Ubuntu 20.04
+- Compilation Toolchain: Linux GCC 9.3.0/Linaro GCC 9.3.0
 
-## 参数
+## Parameters
 
-| 参数名      | 解释             | 类型   | 支持的配置                 | 是否必须 | 默认值             |
-| ------------| -----------------| -------| --------------------------| -------- | -------------------|
-| io_method| 发布图像数据的通信方式 | string    | ros/shared_mem         | 否       | shared_mem                |
-| pub_topic_name| 发布话题名 | string    | 和订阅的话题名一致         | 否       | hbmem_stereo_img                |
-| image_height| 图像数据的高方向分辨率 | int    | 1280         | 否       | 1280                |
-| image_width | 图像数据的宽方向分辨率 | int    | 720         | 否        | 720               |
-| enable_fb   | 发布本地NV12格式的图像数据，图片路径为运行路径下的`frame_10_2560_720.nv12`文件  | bool | True/False | 否 | False |
-| video_device | 设备号 | int    | 根据实际识别出来的设备号配置         | 否        | 0               |
+| Parameter | Description | Type | Supported Configurations | Mandatory | Default Value |
+| --------- | ----------- | ---- | ------------------------ | --------- | ------------- |
+| io_method | Communication method for publishing image data | string | ros/shared_mem | No | shared_mem |
+| pub_topic_name | Topic name for publishing | string | Consistent with subscribed topic name | No | hbmem_stereo_img |
+| image_height | Vertical resolution of image data | int | 1280 | No | 1280 |
+| image_width | Horizontal resolution of image data | int | 720 | No | 720 |
+| enable_fb | Publish image data in local NV12 format, image path is `frame_10_2560_720.nv12` under running path | bool | True/False | No | False |
+| video_device | Device number | int | Configure based on the actual recognized device number | No | 0 |
 
-## RDK Ultra Ubuntu 20.04系统上编译
+## Compilation on RDK Ultra Ubuntu 20.04 System
 
-1、编译环境确认
+1. Confirm the compilation environment
 
-- 已安装tros.b。
+- tro.b is installed.
 
-- 已安装ROS2软件包构建系统ament_cmake。安装命令：`apt update; apt-get install python3-catkin-pkg; pip3 install empy`
+- ROS2 software package build system ament_cmake is installed. Installation command: `apt update; apt-get install python3-catkin-pkg; pip3 install empy`
 
-- 已安装ROS2编译工具colcon。安装命令：`pip3 install -U colcon-common-extensions`
+- ROS2 compilation tool colcon is installed. Installation command: `pip3 install -U colcon-common-extensions`
 
-- 已安装USB驱动。安装命令：`sudo apt install libusb-1.0-0-dev libhidapi-libusb0 libhidapi-dev`
+- USB driver is installed. Installation command: `sudo apt install libusb-1.0-0-dev libhidapi-libusb0 libhidapi-dev`
 
-2、编译
+2. Compilation
 
 ```shell
 source /opt/tros/setup.bash
 colcon build --packages-select hobot_stereo_usb_cam
 ```
 
-## docker交叉编译
+## Cross-Compilation with Docker1. Compilation Environment Verification
 
-1、编译环境确认
+- Compile in Docker and tros.b has been compiled in Docker. For detailed instructions on Docker installation, cross-compilation, tros.b compilation, and deployment, please refer to [TogetheROS.Bot User Manual](https://developer.horizon.ai/api/v1/fileData/documents_tros/quick_start/cross_compile.html#).
 
-- 在docker中编译，并且docker中已经编译好tros.b。docker安装、交叉编译、tros.b编译和部署说明详见[TogetheROS.Bot用户手册](https://developer.horizon.ai/api/v1/fileData/documents_tros/quick_start/cross_compile.html#)。
+2. Compilation
 
-2、编译
+- Compilation command:
 
-- 编译命令：
+```shell
+bash robot_dev_config/build.sh -p Rdkultra -s hobot_stereo_usb_cam
+```
 
-  ```shell
-  bash robot_dev_config/build.sh -p Rdkultra -s hobot_stereo_usb_cam
-  ```
-
-## 运行
+## Execution
 
 ```shell
 source /opt/tros/setup.bash
 ros2 launch hobot_stereo_usb_cam hobot_stereo_usb_cam.launch.py
 ```
 
-运行成功后输出如下log:
+After successful execution, the following log will be output:
 
 ```shell
 [INFO] [launch]: All log files can be found below /root/.ros/log/2023-07-04-22-45-35-530438-hobot-2618037
