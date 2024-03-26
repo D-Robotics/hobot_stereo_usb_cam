@@ -48,7 +48,7 @@ source /opt/tros/setup.bash
 colcon build --packages-select hobot_stereo_usb_cam
 ```
 
-## Cross-Compilation with Docker1. 
+## Cross-Compilation with Docker
 
 1. Compilation Environment Verification
 
