@@ -33,7 +33,7 @@ Obtain stereo image data from USB cameras and publish topic messages through `RO
 
 1. Confirm the compilation environment
 
-- tro.b is installed.
+- tros.b is installed.
 
 - ROS2 software package build system ament_cmake is installed. Installation command: `apt update; apt-get install python3-catkin-pkg; pip3 install empy`
 
@@ -48,7 +48,9 @@ source /opt/tros/setup.bash
 colcon build --packages-select hobot_stereo_usb_cam
 ```
 
-## Cross-Compilation with Docker1. Compilation Environment Verification
+## Cross-Compilation with Docker1. 
+
+1. Compilation Environment Verification
 
 - Compile in Docker and tros.b has been compiled in Docker. For detailed instructions on Docker installation, cross-compilation, tros.b compilation, and deployment, please refer to [TogetheROS.Bot User Manual](https://developer.horizon.ai/api/v1/fileData/documents_tros/quick_start/cross_compile.html#).
 
