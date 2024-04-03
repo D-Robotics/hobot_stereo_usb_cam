@@ -124,12 +124,12 @@ int StereoUsbCamNode::Init() {
 
   if (io_method_.compare("ros") == 0) {
     image_pub_ =
-      this->create_publisher<sensor_msgs::msg::Image>("image_raw", qos_depth_);
+      this->create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
   } else {
     // 创建hbmempub
     publisher_hbmem_ =
         this->create_publisher<hbm_img_msgs::msg::HbmMsg1080P>(
-            pub_hbmem_topic_name_, qos_depth_);
+            pub_hbmem_topic_name_, rclcpp::SensorDataQoS());
   }
 
   if (enable_fb_) {

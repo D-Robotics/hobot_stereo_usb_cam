@@ -93,7 +93,6 @@ private:
   std::string camera_calibration_file_path_;
 
   rclcpp::TimerBase::SharedPtr timer_ = nullptr;
-  const int qos_depth_ = 10;
   
   size_t cache_len_limit_ = 10;
   std::vector<int> video_index_ {0, 1};
