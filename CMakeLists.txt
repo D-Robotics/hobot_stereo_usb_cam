@@ -55,7 +55,7 @@ add_executable(${PROJECT_NAME}
   src/stereo_usb_cam_node.cpp
 )
 
-set(BASE_LIBRARIES pthread vio cam dl)
+set(BASE_LIBRARIES pthread cam dl)
 
 target_link_libraries(${PROJECT_NAME}
   ${BASE_LIBRARIES} yaml-cpp opencv_world
