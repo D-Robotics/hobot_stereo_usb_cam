@@ -58,7 +58,7 @@ add_executable(${PROJECT_NAME}
 set(BASE_LIBRARIES pthread cam dl)
 
 target_link_libraries(${PROJECT_NAME}
-  ${BASE_LIBRARIES} yaml-cpp opencv_world
+  ${BASE_LIBRARIES}
   zed_open_capture
   hidapi-libusb
   usb-1.0
