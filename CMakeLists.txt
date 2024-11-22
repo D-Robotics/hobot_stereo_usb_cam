@@ -37,6 +37,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(OpenCV 4 REQUIRED)
 
 include_directories(
   include
@@ -58,7 +59,7 @@ add_executable(${PROJECT_NAME}
 set(BASE_LIBRARIES pthread cam dl)
 
 target_link_libraries(${PROJECT_NAME}
-  ${BASE_LIBRARIES}
+  ${BASE_LIBRARIES} yaml-cpp
   zed_open_capture
   hidapi-libusb
   usb-1.0
@@ -70,6 +71,7 @@ ament_target_dependencies(
   sensor_msgs
   hbm_img_msgs
   yaml_cpp_vendor
+  OpenCV
   )
 
 install(DIRECTORY
